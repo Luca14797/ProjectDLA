@@ -38,13 +38,13 @@ if (upload_dataset == 1)
     fprintf('Upload images and create dataset ...\n');
     
     % Upload train images
-    filePattern = fullfile(fullfile(basepath, dataset_dir, 'train', 'images'));
-    train = upload_train_images(filePattern);
+    filePattern = fullfile(fullfile(basepath, dataset_dir, 'train', 'images', 'train_OBJ'));
+    train = upload_images(filePattern);
     save(fullfile(basepath, data_dir, file_train), 'train', '-v7.3');
 
     % Upload test images
     filePattern = fullfile(fullfile(basepath, dataset_dir, 'test', 'images'));
-    test = upload_test_images(filePattern);
+    test = upload_images(filePattern);
     save(fullfile(basepath, data_dir, file_test), 'test', '-v7.3');
     
 else
@@ -59,11 +59,15 @@ else
     
 end
 
+
+%{
 %% PRE PROCESSING
 
 fprintf('Pre processing ...\n');
 
 [train, test] = pre_processing(train, test, NORM+STD);
+%}
+
 
 %% ALEX NET
 
@@ -74,6 +78,6 @@ inputSize = net.Layers(1).InputSize;
 train = augmentedImageDatastore(inputSize(1:2), train);
 test = augmentedImageDatastore(inputSize(1:2), test);
 
-size(test.X)
-size(train.X)
+
+
 
