@@ -71,12 +71,18 @@ fprintf('Pre processing ...\n');
 
 %% ALEX NET
 
+fprintf('Load Alexnet ...\n');
+
 net = alexnet;
 
 inputSize = net.Layers(1).InputSize;
 
+fprintf('Augmenting images ...\n');
+
 trainAug = augmentedImageDatastore(inputSize(1:2), train);
 testAug = augmentedImageDatastore(inputSize(1:2), test);
+
+fprintf('Activations ...\n');
 
 layer = 'pool5';
 featuresTrain = activations(net,trainAug,layer,'OutputAs','rows');
@@ -87,7 +93,11 @@ whos featuresTrain
 YTrain = train.Labels;
 YTest = test.Labels;
 
+fprintf('Fitting SVM ...\n');
+
 classifier = fitcecoc(featuresTrain,YTrain);
+
+fprintf('Prediction ...\n');
 
 YPred = predict(classifier,featuresTest);
 
