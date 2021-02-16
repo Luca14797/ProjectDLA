@@ -75,9 +75,30 @@ net = alexnet;
 
 inputSize = net.Layers(1).InputSize;
 
-train = augmentedImageDatastore(inputSize(1:2), train);
-test = augmentedImageDatastore(inputSize(1:2), test);
+trainAug = augmentedImageDatastore(inputSize(1:2), train);
+testAug = augmentedImageDatastore(inputSize(1:2), test);
 
+layer = 'pool5';
+featuresTrain = activations(net,trainAug,layer,'OutputAs','rows');
+featuresTest = activations(net,testAug,layer,'OutputAs','rows');
 
+whos featuresTrain
 
+YTrain = train.Labels;
+YTest = test.Labels;
 
+classifier = fitcecoc(featuresTrain,YTrain);
+
+YPred = predict(classifier,featuresTest);
+
+idx = [1 5 10 15];
+figure
+for i = 1:numel(idx)
+    subplot(2,2,i)
+    I = readimage(test,idx(i));
+    label = YPred(idx(i));
+    imshow(I)
+    title(char(label))
+end
+
+accuracy = mean(YPred == YTest);
