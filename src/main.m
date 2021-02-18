@@ -24,6 +24,9 @@ end
 
 % FLAGS
 upload_dataset = 0;
+do_alexnet = 0;
+do_resnet18 = 0;
+do_vgg16 = 1;
 
 % VARIABLES
 file_train = 'train.mat';
@@ -68,14 +71,33 @@ fprintf('Pre processing ...\n');
 [train, test] = pre_processing(train, test, NORM+STD);
 %}
 
+%%
+if (do_alexnet == 1)
 
-%% ALEX NET
+    fprintf('Load Alexnet ...\n');
 
-fprintf('Load Alexnet ...\n');
+    net = alexnet;
 
-net = alexnet;
+    inputSize = net.Layers(1).InputSize;
 
-inputSize = net.Layers(1).InputSize;
+elseif (do_resnet18 == 1)
+
+    fprintf('Load Resnet18 ...\n');
+
+    net = resnet18;
+
+    inputSize = net.Layers(1).InputSize;
+
+elseif (do_vgg16 == 1)
+
+    fprintf('Load VGG16 ...\n');
+
+    net = vgg16;
+
+    inputSize = net.Layers(1).InputSize;
+
+end 
+%%
 
 fprintf('Augmenting images ...\n');
 
