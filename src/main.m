@@ -24,9 +24,9 @@ end
 
 % FLAGS
 upload_dataset = 0;
-do_alexnet = 0;
+do_alexnet = 1;
 do_resnet18 = 0;
-do_vgg16 = 1;
+do_vgg16 = 0;
 
 % VARIABLES
 file_train = 'train.mat';
@@ -71,6 +71,14 @@ fprintf('Pre processing ...\n');
 [train, test] = pre_processing(train, test, NORM+STD);
 %}
 
+targetSize = [227, 227, 3];
+
+train = transform(train, @(x) imresize(x, targetSize));
+trainAug = train.UnderlyingDatastore;
+
+test = transform(test, @(x) imresize(x, targetSize));
+testAug = test.UnderlyingDatastore;
+
 %%
 if (do_alexnet == 1)
 
@@ -98,12 +106,12 @@ elseif (do_vgg16 == 1)
 
 end 
 %%
-
+%{
 fprintf('Augmenting images ...\n');
 
 trainAug = augmentedImageDatastore(inputSize(1:2), train);
 testAug = augmentedImageDatastore(inputSize(1:2), test);
-
+%}
 fprintf('Activations ...\n');
 
 layer = 'pool5';
@@ -134,3 +142,23 @@ for i = 1:numel(idx)
 end
 
 accuracy = mean(YPred == YTest);
+
+function dataOut = normalization(data)
+    fprintf('1\n');
+    dataOut = cell(size(data));
+    for col = 1:size(data,2)
+        fprintf('2\n');
+        for idx = 1:size(data,1)
+            fprintf('3\n');
+            fprintf('%d',data{idx,col});
+            
+            temp = single(data{idx,col});
+            temp = imresize(temp,[32,32]);
+            temp = rescale(temp);
+            dataOut{idx,col} = temp;
+            
+        end
+        
+    end
+    fprintf('4\n');
+end

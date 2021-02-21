@@ -1,2 +1,5 @@
 dataset/
 src/data/
+
+*.mexw64
+*.mexmaci64
