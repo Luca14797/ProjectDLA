@@ -11,7 +11,14 @@ else
     functions_folder = fullfile(basepath, 'src/functions'); 
 end
 
+if ispc
+    svm_folder = fullfile(basepath, 'src\SVMlinear');
+else
+    svm_folder = fullfile(basepath, 'src/SVMlinear'); 
+end
+
 addpath(functions_folder)
+addpath(svm_folder)
 
 % DATASET
 dataset_dir = 'dataset';
@@ -24,9 +31,12 @@ end
 
 % FLAGS
 upload_dataset = 0;
+show_img = 0;
 do_alexnet = 1;
 do_resnet18 = 0;
 do_vgg16 = 0;
+do_svm = 0;
+do_fine_tuning = 0;
 
 % VARIABLES
 file_train = 'train.mat';
@@ -71,14 +81,6 @@ fprintf('Pre processing ...\n');
 [train, test] = pre_processing(train, test, NORM+STD);
 %}
 
-targetSize = [227, 227, 3];
-
-train = transform(train, @(x) imresize(x, targetSize));
-trainAug = train.UnderlyingDatastore;
-
-test = transform(test, @(x) imresize(x, targetSize));
-testAug = test.UnderlyingDatastore;
-
 %%
 if (do_alexnet == 1)
 
@@ -106,59 +108,16 @@ elseif (do_vgg16 == 1)
 
 end 
 %%
-%{
+
 fprintf('Augmenting images ...\n');
 
 trainAug = augmentedImageDatastore(inputSize(1:2), train);
 testAug = augmentedImageDatastore(inputSize(1:2), test);
-%}
-fprintf('Activations ...\n');
 
-layer = 'pool5';
-featuresTrain = activations(net,trainAug,layer,'OutputAs','rows');
-featuresTest = activations(net,testAug,layer,'OutputAs','rows');
-
-whos featuresTrain
-
-YTrain = train.Labels;
-YTest = test.Labels;
-
-fprintf('Fitting SVM ...\n');
-
-classifier = fitcecoc(featuresTrain,YTrain);
-
-fprintf('Prediction ...\n');
-
-YPred = predict(classifier,featuresTest);
-
-idx = [1 5 10 15];
-figure
-for i = 1:numel(idx)
-    subplot(2,2,i)
-    I = readimage(test,idx(i));
-    label = YPred(idx(i));
-    imshow(I)
-    title(char(label))
-end
-
-accuracy = mean(YPred == YTest);
-
-function dataOut = normalization(data)
-    fprintf('1\n');
-    dataOut = cell(size(data));
-    for col = 1:size(data,2)
-        fprintf('2\n');
-        for idx = 1:size(data,1)
-            fprintf('3\n');
-            fprintf('%d',data{idx,col});
-            
-            temp = single(data{idx,col});
-            temp = imresize(temp,[32,32]);
-            temp = rescale(temp);
-            dataOut{idx,col} = temp;
-            
-        end
-        
-    end
-    fprintf('4\n');
+if (do_svm == 1)
+    
+    accuracy = svm_classification(net, train, test, trainAug, testAug, show_img);
+    
+elseif (do_fine_tuning == 1)
+    
 end
