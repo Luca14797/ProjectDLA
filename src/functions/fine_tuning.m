@@ -14,13 +14,17 @@ function accuracy = fine_tuning(net, net_name, train, inputSize)
         newClassLayer = classificationLayer('Name','new_classoutput');
         lgraph = replaceLayer(lgraph,'ClassificationLayer_predictions',newClassLayer);
         
-    elseif (net_name == 'alexnet')
+    elseif (net_name == 'alexnet' || net_name == 'vgg16')
         
         % Series network
         
-    elseif (net_name == 'vgg16')
-        
-        % Series network
+        layersTransfer = net.Layers(1:end-3);
+        numClasses = numel(categories(imdsTrain.Labels));
+        lgraph = [
+            layersTransfer
+            fullyConnectedLayer(numClasses,'WeightLearnRateFactor',20,'BiasLearnRateFactor',20)
+            softmaxLayer
+            classificationLayer];
         
     end
     
