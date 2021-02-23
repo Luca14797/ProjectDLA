@@ -3,3 +3,4 @@ src/data/
 
 *.mexw64
 *.mexmaci64
+*.asv

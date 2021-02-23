@@ -32,11 +32,11 @@ end
 % FLAGS
 upload_dataset = 0;
 show_img = 0;
-do_alexnet = 1;
-do_resnet18 = 0;
+do_alexnet = 0;
+do_resnet18 = 1;
 do_vgg16 = 0;
 do_svm = 0;
-do_fine_tuning = 0;
+do_fine_tuning = 1;
 
 % VARIABLES
 file_train = 'train.mat';
@@ -109,15 +109,17 @@ elseif (do_vgg16 == 1)
 end 
 %%
 
-fprintf('Augmenting images ...\n');
-
-trainAug = augmentedImageDatastore(inputSize(1:2), train);
-testAug = augmentedImageDatastore(inputSize(1:2), test);
-
 if (do_svm == 1)
+    
+    fprintf('Augmenting images ...\n');
+
+    trainAug = augmentedImageDatastore(inputSize(1:2), train);
+    testAug = augmentedImageDatastore(inputSize(1:2), test);
     
     accuracy = svm_classification(net, train, test, trainAug, testAug, show_img);
     
 elseif (do_fine_tuning == 1)
+    
+    accuracy = fine_tuning(net, 'resnet18', train, inputSize);
     
 end
