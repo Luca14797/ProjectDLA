@@ -33,18 +33,19 @@ end
 upload_dataset = 0;
 show_img = 0;
 do_alexnet = 0;
-do_resnet18 = 1;
+do_resnet18 = 0;
 do_vgg16 = 0;
 do_svm = 0;
-do_fine_tuning = 1;
+do_fine_tuning = 0;
+do_new_architecture = 1;
 
 % VARIABLES
 file_train = 'train.mat';
 file_test = 'test.mat';
 
+rng(0);
+
 %% UPLOAD IMAGES
-
-
 
 if (upload_dataset == 1)
     
@@ -120,6 +121,10 @@ if (do_svm == 1)
     
 elseif (do_fine_tuning == 1)
     
-    accuracy = fine_tuning(net, 'resnet18', train, inputSize);
+    accuracy = fine_tuning(net, 'alexnet', train, inputSize);
+
+elseif (do_new_architecture == 1)
+    
+   accuracies = grid_search(train, [0.01, 0.001, 0.0001], ["adam", "rmsprop", "sgdm"], [16, 32, 64], [1, 2]);
     
 end

@@ -2,7 +2,7 @@ function accuracy = fine_tuning(net, net_name, train, inputSize)
 
     [train,validation] = splitEachLabel(train,0.8,'randomized');
 
-    if (net_name == 'resnet18')
+    if (net_name == "resnet18")
         
         % DAG network
         
@@ -14,12 +14,12 @@ function accuracy = fine_tuning(net, net_name, train, inputSize)
         newClassLayer = classificationLayer('Name','new_classoutput');
         lgraph = replaceLayer(lgraph,'ClassificationLayer_predictions',newClassLayer);
         
-    elseif (net_name == 'alexnet' || net_name == 'vgg16')
+    elseif (net_name == "alexnet" || net_name == "vgg16")
         
         % Series network
         
         layersTransfer = net.Layers(1:end-3);
-        numClasses = numel(categories(imdsTrain.Labels));
+        numClasses = numel(categories(train.Labels));
         lgraph = [
             layersTransfer
             fullyConnectedLayer(numClasses,'WeightLearnRateFactor',20,'BiasLearnRateFactor',20)
@@ -35,7 +35,7 @@ function accuracy = fine_tuning(net, net_name, train, inputSize)
         'DataAugmentation',imageAugmenter);
     validationAug = augmentedImageDatastore(inputSize(1:2),validation);
     
-    options = trainingOptions('sgdm', 'MiniBatchSize',128, 'MaxEpochs',5, ...
+    options = trainingOptions('sgdm', 'MiniBatchSize',32, 'MaxEpochs',5, ...
         'InitialLearnRate',1e-4, 'Shuffle','every-epoch', ...
         'ValidationData',validationAug, 'ValidationFrequency',3, ...
         'Verbose',false, 'Plots','training-progress');
