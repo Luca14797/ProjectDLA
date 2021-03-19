@@ -35,9 +35,10 @@ show_img = 0;
 do_alexnet = 0;
 do_resnet18 = 0;
 do_vgg16 = 0;
+do_googlenet = 1;
 do_svm = 0;
-do_fine_tuning = 0;
-do_new_architecture = 1;
+do_fine_tuning = 1;
+do_new_architecture = 0;
 
 % VARIABLES
 file_train = 'train.mat';
@@ -107,6 +108,14 @@ elseif (do_vgg16 == 1)
 
     inputSize = net.Layers(1).InputSize;
 
+elseif (do_googlenet == 1)
+    
+    fprintf('Load GoogleNet ...\n');
+
+    net = googlenet;
+
+    inputSize = net.Layers(1).InputSize;
+    
 end 
 %%
 
@@ -121,10 +130,10 @@ if (do_svm == 1)
     
 elseif (do_fine_tuning == 1)
     
-    accuracy = fine_tuning(net, 'alexnet', train, inputSize);
+    accuracy = fine_tuning(net, 'googlenet', train, inputSize, 'loss3-classifier', 'output');
 
 elseif (do_new_architecture == 1)
     
-   accuracies = grid_search(train, [0.01, 0.001, 0.0001], ["adam", "rmsprop", "sgdm"], [16, 32, 64], [1, 2]);
+   accuracies = grid_search(train, [0.1, 0.01, 0.001, 0.0001], ["adam", "rmsprop", "sgdm"], [16, 32, 64], [1, 2]);
     
 end
