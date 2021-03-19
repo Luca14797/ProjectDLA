@@ -38,13 +38,13 @@ do_vgg16 = 0;
 do_googlenet = 0;
 do_svm = 0;
 do_fine_tuning = 0;
-do_new_architecture = 0;
+do_new_architecture = 1;
 
 % VARIABLES
 file_train = 'train.mat';
 file_test = 'test.mat';
 
-rng(0);
+rng(1);
 
 %% UPLOAD IMAGES
 
@@ -135,6 +135,7 @@ elseif (do_fine_tuning == 1)
 
 elseif (do_new_architecture == 1)
     
-   accuracies = grid_search(train, [0.01, 0.001, 0.0001], ["adam", "rmsprop", "sgdm"], [16, 32, 64], [1, 2]);
+   %accuracies = grid_search(train, [0.01, 0.001, 0.0001], ["adam", "rmsprop", "sgdm"], [16, 32, 64], [1, 2]);
+   accuracy = train_new_architecture(train, 1);
     
 end
