@@ -44,7 +44,11 @@ do_new_architecture = 1;
 file_train = 'train.mat';
 file_test = 'test.mat';
 
-rng(1);
+rng('default');
+rng(0);
+
+gpurng('default');
+gpurng(0);
 
 %% UPLOAD IMAGES
 
@@ -136,6 +140,17 @@ elseif (do_fine_tuning == 1)
 elseif (do_new_architecture == 1)
     
    %accuracies = grid_search(train, [0.01, 0.001, 0.0001], ["adam", "rmsprop", "sgdm"], [16, 32, 64], [1, 2]);
-   accuracy = train_new_architecture(train, 1);
+   meanTest = 0;
+   meanVal = 0;
+   for i=1:3
+        [accuracyTest, accuracyVal] = train_new_architecture(train, test, 2);
+        meanTest = meanTest + accuracyTest;
+        meanVal = meanVal + accuracyVal;
+        fprintf('Accuracy #%d Test set: %d\n', i, accuracyTest);
+        fprintf('Accuracy #%d Validation set: %d\n', i, accuracyVal);
+   end
+   
+   fprintf('Mean accuracy Test set: %d\n', (meanTest/3));
+   fprintf('Mean accuracy Validation set: %d\n', (meanVal/3));
     
 end
