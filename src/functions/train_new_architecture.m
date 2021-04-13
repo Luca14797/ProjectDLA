@@ -1,4 +1,4 @@
-function [accuracyTest, accuracyVal] = train_new_architecture(train, test, version)
+function [accuracyTest, accuracyVal, accuracyTrain] = train_new_architecture(train, test, version)
 
     [train,validation] = splitEachLabel(train, 0.8, 'randomized');
 
@@ -22,5 +22,10 @@ function [accuracyTest, accuracyVal] = train_new_architecture(train, test, versi
     YVal = validation.Labels;
 
     accuracyVal = sum(YPred == YVal)/numel(YVal);
+    
+    YPred = classify(net, train);
+    YTrain = train.Labels;
+
+    accuracyTrain = sum(YPred == YTrain)/numel(YTrain);
     
 end

@@ -34,17 +34,28 @@ function layers = new_architecture(inputSize, version)
         layers = [
         imageInputLayer(inputSize)
 
-        convolution2dLayer(3,8,'Padding','same')
+        convolution2dLayer(3,32)
         reluLayer
 
         maxPooling2dLayer(2,'Stride',2)
 
-        convolution2dLayer(3,16,'Padding','same')
+        convolution2dLayer(3,64)
         reluLayer
 
         maxPooling2dLayer(2,'Stride',2)
 
-        convolution2dLayer(3,32,'Padding','same')
+        convolution2dLayer(3,128)
+        reluLayer
+        
+        maxPooling2dLayer(2,'Stride',2)
+
+        convolution2dLayer(3,256)
+        reluLayer
+        
+        fullyConnectedLayer(1024)
+        reluLayer
+        
+        fullyConnectedLayer(1024)
         reluLayer
 
         fullyConnectedLayer(4)

@@ -142,15 +142,19 @@ elseif (do_new_architecture == 1)
    %accuracies = grid_search(train, [0.01, 0.001, 0.0001], ["adam", "rmsprop", "sgdm"], [16, 32, 64], [1, 2]);
    meanTest = 0;
    meanVal = 0;
+   meanTrain = 0;
    for i=1:3
-        [accuracyTest, accuracyVal] = train_new_architecture(train, test, 2);
+        [accuracyTest, accuracyVal, accuracyTrain] = train_new_architecture(train, test, 2);
         meanTest = meanTest + accuracyTest;
         meanVal = meanVal + accuracyVal;
+        meanTrain = meanTrain + accuracyTrain;
         fprintf('Accuracy #%d Test set: %d\n', i, accuracyTest);
         fprintf('Accuracy #%d Validation set: %d\n', i, accuracyVal);
+        fprintf('Accuracy #%d Train set: %d\n', i, accuracyTrain);
    end
    
    fprintf('Mean accuracy Test set: %d\n', (meanTest/3));
    fprintf('Mean accuracy Validation set: %d\n', (meanVal/3));
+   fprintf('Mean accuracy Train set: %d\n', (meanTrain/3));
     
 end
