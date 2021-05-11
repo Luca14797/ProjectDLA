@@ -42,6 +42,7 @@ do_new_architecture = 1;
 
 % VARIABLES
 file_train = 'train.mat';
+file_validation = 'validation.mat';
 file_test = 'test.mat';
 
 rng('default');
@@ -56,10 +57,12 @@ if (upload_dataset == 1)
     
     fprintf('Upload images and create dataset ...\n');
     
-    % Upload train images
+    % Upload train and validation images
     filePattern = fullfile(fullfile(basepath, dataset_dir, 'train', 'images', 'train_OBJ'));
     train = upload_images(filePattern);
+    [train,validation] = splitEachLabel(train, 0.8, 'randomized');
     save(fullfile(basepath, data_dir, file_train), 'train', '-v7.3');
+    save(fullfile(basepath, data_dir, file_validation), 'validation', '-v7.3');
 
     % Upload test images
     filePattern = fullfile(fullfile(basepath, dataset_dir, 'test', 'images'));
@@ -73,19 +76,24 @@ else
     % Load train data
     load(fullfile(basepath, data_dir, file_train));
     
+    % Load validation data
+    load(fullfile(basepath, data_dir, file_validation));
+    
     % Load test data
     load(fullfile(basepath, data_dir, file_test));
     
 end
 
 
-%{
+
 %% PRE PROCESSING
 
 fprintf('Pre processing ...\n');
 
-[train, test] = pre_processing(train, test, NORM+STD);
-%}
+imageAugmenter = imageDataAugmenter('RandRotation',@() -20+40*rand);
+augTrain = augmentedImageDatastore([84 84 3], train, 'DataAugmentation', imageAugmenter);
+augValidation = augmentedImageDatastore([84 84 3], validation, 'DataAugmentation', imageAugmenter);
+
 
 %%
 if (do_alexnet == 1)
@@ -144,7 +152,7 @@ elseif (do_new_architecture == 1)
    meanVal = 0;
    meanTrain = 0;
    for i=1:3
-        [accuracyTest, accuracyVal, accuracyTrain] = train_new_architecture(train, test, 2);
+        [accuracyTest, accuracyVal, accuracyTrain] = train_new_architecture(train, validation, test, augTrain, augValidation, 2);
         meanTest = meanTest + accuracyTest;
         meanVal = meanVal + accuracyVal;
         meanTrain = meanTrain + accuracyTrain;

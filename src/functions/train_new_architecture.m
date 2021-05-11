@@ -1,17 +1,15 @@
-function [accuracyTest, accuracyVal, accuracyTrain] = train_new_architecture(train, test, version)
-
-    [train,validation] = splitEachLabel(train, 0.8, 'randomized');
+function [accuracyTest, accuracyVal, accuracyTrain] = train_new_architecture(train, validation, test, augTrain, augValidation, version)
 
     layers = new_architecture([84 84 3], version);
     options = trainingOptions('adam', 'MiniBatchSize',32, ...
         'InitialLearnRate',0.0003, 'MaxEpochs',5, ...
-        'Shuffle','every-epoch', 'ValidationData',validation, ...
+        'Shuffle','every-epoch', 'ValidationData',augValidation, ...
         'ValidationFrequency',281, 'Verbose',true, ...
         'Plots','training-progress');
 
     % , 'L2Regularization',0.005
     % 'LearnRateSchedule','piecewise', 'LearnRateDropFactor',0.90, 'LearnRateDropPeriod',1,
-    net = trainNetwork(train, layers, options);
+    net = trainNetwork(augTrain, layers, options);
 
     YPred = classify(net, test);
     YTest = test.Labels;
