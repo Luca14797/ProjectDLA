@@ -1,10 +1,4 @@
-function accuracy = fine_tuning(net, net_name, train, inputSize, level_name, newLevel_name)
-
-    [train,validation] = splitEachLabel(train,0.8,'randomized');
-
-    %AlexNet = 'fc1000' and 'ClassificationLayer_predictions'
-    %GoogleNwt = 'loss3-classifier' and 'output'
-    
+function accuracy = fine_tuning(net, net_name, train, validation, inputSize, level_name, newLevel_name)
     
     if (net_name == "resnet18" || net_name == "googlenet")
         

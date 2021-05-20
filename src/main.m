@@ -30,7 +30,7 @@ else
 end
 
 % FLAGS
-upload_dataset = 0;
+upload_dataset = 1;
 show_img = 0;
 do_alexnet = 0;
 do_resnet18 = 0;
@@ -39,6 +39,7 @@ do_googlenet = 0;
 do_svm = 0;
 do_fine_tuning = 0;
 do_new_architecture = 1;
+include_segm = 1;
 
 % VARIABLES
 file_train = 'train.mat';
@@ -58,14 +59,24 @@ if (upload_dataset == 1)
     fprintf('Upload images and create dataset ...\n');
     
     % Upload train and validation images
-    filePattern = fullfile(fullfile(basepath, dataset_dir, 'train', 'images', 'train_OBJ'));
+    filePatternObj = fullfile(basepath, dataset_dir, 'train', 'images', 'train_OBJ');
+    filePatternSegm = fullfile(basepath, dataset_dir, 'train', 'images', 'train_SEGM');
+    
+    filePattern = {filePatternObj};
+    
+    if include_segm
+        
+        filePattern = {filePatternObj, filePatternSegm};
+    
+    end
+    
     train = upload_images(filePattern);
-    [train,validation] = splitEachLabel(train, 0.8, 'randomized');
+    [train, validation] = splitEachLabel(train, 0.8, 'randomized');
     save(fullfile(basepath, data_dir, file_train), 'train', '-v7.3');
     save(fullfile(basepath, data_dir, file_validation), 'validation', '-v7.3');
 
     % Upload test images
-    filePattern = fullfile(fullfile(basepath, dataset_dir, 'test', 'images'));
+    filePattern = {fullfile(basepath, dataset_dir, 'test', 'images')};
     test = upload_images(filePattern);
     save(fullfile(basepath, data_dir, file_test), 'test', '-v7.3');
     
@@ -90,7 +101,11 @@ end
 
 fprintf('Pre processing ...\n');
 
-imageAugmenter = imageDataAugmenter('RandRotation',@() -20+40*rand);
+imageAugmenter = imageDataAugmenter('RandRotation',@() -180+360*rand, ... 
+                                    'RandXReflection', true, ...
+                                    'RandXScale',[1, 1.05], ...
+                                    'RandYReflection', true, ...
+                                    'RandYScale',[1, 1.05]);
 augTrain = augmentedImageDatastore([84 84 3], train, 'DataAugmentation', imageAugmenter);
 augValidation = augmentedImageDatastore([84 84 3], validation, 'DataAugmentation', imageAugmenter);
 
@@ -143,8 +158,10 @@ if (do_svm == 1)
     
 elseif (do_fine_tuning == 1)
     
-    accuracy = fine_tuning(net, 'googlenet', train, inputSize, 'loss3-classifier','output');
-
+    accuracy = fine_tuning(net, 'googlenet', train, validation, inputSize, 'loss3-classifier','output');
+    %ResNet18 = 'fc1000' and 'ClassificationLayer_predictions'
+    %GoogleNwt = 'loss3-classifier' and 'output'
+    
 elseif (do_new_architecture == 1)
     
    %accuracies = grid_search(train, [0.01, 0.001, 0.0001], ["adam", "rmsprop", "sgdm"], [16, 32, 64], [1, 2]);
@@ -152,7 +169,7 @@ elseif (do_new_architecture == 1)
    meanVal = 0;
    meanTrain = 0;
    for i=1:3
-        [accuracyTest, accuracyVal, accuracyTrain] = train_new_architecture(train, validation, test, augTrain, augValidation, 2);
+        [accuracyTest, accuracyVal, accuracyTrain] = train_new_architecture(train, validation, test, augTrain, augValidation, 3);
         meanTest = meanTest + accuracyTest;
         meanVal = meanVal + accuracyVal;
         meanTrain = meanTrain + accuracyTrain;
