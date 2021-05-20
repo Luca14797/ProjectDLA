@@ -107,7 +107,6 @@ imageAugmenter = imageDataAugmenter('RandRotation',@() -180+360*rand, ...
                                     'RandYReflection', true, ...
                                     'RandYScale',[1, 1.05]);
 augTrain = augmentedImageDatastore([84 84 3], train, 'DataAugmentation', imageAugmenter);
-augValidation = augmentedImageDatastore([84 84 3], validation, 'DataAugmentation', imageAugmenter);
 
 
 %%
@@ -160,7 +159,7 @@ elseif (do_fine_tuning == 1)
     
     accuracy = fine_tuning(net, 'googlenet', train, validation, inputSize, 'loss3-classifier','output');
     %ResNet18 = 'fc1000' and 'ClassificationLayer_predictions'
-    %GoogleNwt = 'loss3-classifier' and 'output'
+    %GoogleNet = 'loss3-classifier' and 'output'
     
 elseif (do_new_architecture == 1)
     
@@ -169,7 +168,7 @@ elseif (do_new_architecture == 1)
    meanVal = 0;
    meanTrain = 0;
    for i=1:3
-        [accuracyTest, accuracyVal, accuracyTrain] = train_new_architecture(train, validation, test, augTrain, augValidation, 3);
+        [accuracyTest, accuracyVal, accuracyTrain] = train_new_architecture(train, validation, test, augTrain, 3);
         meanTest = meanTest + accuracyTest;
         meanVal = meanVal + accuracyVal;
         meanTrain = meanTrain + accuracyTrain;

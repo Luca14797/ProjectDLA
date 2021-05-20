@@ -1,4 +1,4 @@
-function [accuracyTest, accuracyVal, accuracyTrain] = train_new_architecture(train, validation, test, augTrain, augValidation, version)
+function [accuracyTest, accuracyVal, accuracyTrain] = train_new_architecture(train, validation, test, augTrain, version)
 
     layers = new_architecture([84 84 3], version);
     options = trainingOptions('adam', 'MiniBatchSize',32, ...
