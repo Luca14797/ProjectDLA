@@ -46,6 +46,9 @@ file_train = 'train.mat';
 file_validation = 'validation.mat';
 file_test = 'test.mat';
 
+% CLASSES
+classes = {"Normal Pollen", "Anomalus Pollen", "Alnus", "Debris"};
+
 rng('default');
 rng(0);
 
@@ -153,11 +156,11 @@ if (do_svm == 1)
     trainAug = augmentedImageDatastore(inputSize(1:2), train);
     testAug = augmentedImageDatastore(inputSize(1:2), test);
     
-    accuracy = svm_classification(net, train, test, trainAug, testAug, show_img);
+    [accuracy, YPred, YTest] = svm_classification(net, train, test, trainAug, testAug, show_img);
     
 elseif (do_fine_tuning == 1)
     
-    accuracy = fine_tuning(net, 'vgg16', train, validation, inputSize);
+    [accuracy, YPred, YTest] = fine_tuning(net, 'vgg16', train, validation, inputSize);
     %ResNet18 = 'fc1000' and 'ClassificationLayer_predictions'
     %GoogleNet = 'loss3-classifier' and 'output'
     
@@ -168,20 +171,13 @@ elseif (do_new_architecture == 1)
    meanVal = 0;
    meanTrain = 0;
    for i=1:3
-        [accuracyTest, accuracyVal, accuracyTrain, cm] = train_new_architecture(train, validation, test, augTrain, 2);
+        [accuracyTest, accuracyVal, accuracyTrain, YPred, YTest] = train_new_architecture(train, validation, test, augTrain, 2);
         meanTest = meanTest + accuracyTest;
         meanVal = meanVal + accuracyVal;
         meanTrain = meanTrain + accuracyTrain;
         fprintf('Accuracy #%d Test set: %d\n', i, accuracyTest);
         fprintf('Accuracy #%d Validation set: %d\n', i, accuracyVal);
         fprintf('Accuracy #%d Train set: %d\n', i, accuracyTrain);
-        
-        cm.Title = 'Pollengrain Test 9 net';
-        cm.RowSummary = 'row-normalized';
-        cm.ColumnSummary = 'column-normalized';
-        
-        cm.NormalizedValues
-        cm
         
    end
    
@@ -190,3 +186,12 @@ elseif (do_new_architecture == 1)
    fprintf('Mean accuracy Train set: %d\n', (meanTrain/3));
     
 end
+
+cm = confusionchart(YTest ,YPred);
+cm.Title = 'Confusion Matrix';
+cm.RowSummary = 'row-normalized';
+cm.ColumnSummary = 'column-normalized';  
+cm.NormalizedValues
+cm
+
+show_results(classes, test, grp2idx(YTest), grp2idx(YPred));

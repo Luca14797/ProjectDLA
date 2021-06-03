@@ -1,4 +1,4 @@
-function accuracy = fine_tuning(net, net_name, train, validation, inputSize, level_name, newLevel_name)
+function [accuracy, YPred, YTest] = fine_tuning(net, net_name, train, test, validation, inputSize, level_name, newLevel_name)
     
     if (net_name == "resnet18" || net_name == "googlenet")
         
@@ -31,18 +31,19 @@ function accuracy = fine_tuning(net, net_name, train, validation, inputSize, lev
         'RandXTranslation',pixelRange, 'RandYTranslation',pixelRange);
     trainAug = augmentedImageDatastore(inputSize(1:2),train, ...
         'DataAugmentation',imageAugmenter);
-    validationAug = augmentedImageDatastore(inputSize(1:2),validation);
+    validationAug = augmentedImageDatastore(inputSize(1:2), validation);
+    testAug = augmentedImageDatastore(inputSize(1:2), test);
     
     options = trainingOptions('sgdm', 'MiniBatchSize',16, 'MaxEpochs',5, ...
         'InitialLearnRate',1e-4, 'Shuffle','every-epoch', ...
         'ValidationData',validationAug, 'ValidationFrequency', 281, ...
         'Verbose',false, 'Plots','training-progress');
 
-    netTransfer = trainNetwork(trainAug,lgraph,options);
+    netTransfer = trainNetwork(trainAug, lgraph, options);
     
-    [YPred,scores] = classify(netTransfer,validationAug);
+    [YPred, scores] = classify(netTransfer, testAug);
     
-    YValidation = validation.Labels;
-    accuracy = mean(YPred == YValidation);
+    YTest = test.Labels;
+    accuracy = mean(YPred == YTest);
 
 end
