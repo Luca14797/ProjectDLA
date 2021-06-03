@@ -13,8 +13,9 @@ function accuracy = svm_classification(net, train, test, trainAug, testAug, show
     YTest = test.Labels;
 
     fprintf('Fitting SVM ...\n');
-
-    classifier = fitcecoc(featuresTrain, YTrain);
+    
+    t = templateLinear();
+    classifier = fitcecoc(featuresTrain, YTrain, 'Learners', t);
 
     fprintf('Prediction ...\n');
 
@@ -35,6 +36,9 @@ function accuracy = svm_classification(net, train, test, trainAug, testAug, show
         end
         
     end
+    
+    
+    show_results(classes, test, grp2idx(YTest), grp2idx(YPred));
 
     accuracy = mean(YPred == YTest);
     

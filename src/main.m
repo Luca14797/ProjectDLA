@@ -30,15 +30,15 @@ else
 end
 
 % FLAGS
-upload_dataset = 1;
+upload_dataset = 0;
 show_img = 0;
 do_alexnet = 0;
-do_resnet18 = 0;
+do_resnet18 = 1;
 do_vgg16 = 0;
 do_googlenet = 0;
-do_svm = 0;
+do_svm = 1;
 do_fine_tuning = 0;
-do_new_architecture = 1;
+do_new_architecture = 0;
 include_segm = 0;
 
 % VARIABLES
