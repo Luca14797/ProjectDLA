@@ -46,35 +46,35 @@ function layers = new_architecture(inputSize, version)
         imageInputLayer(inputSize)
 
         convolution2dLayer(5,32)
-        leakyReluLayer(0.01)
         batchNormalizationLayer
+        leakyReluLayer(0.01)
 
         
         maxPooling2dLayer(2,'Stride',2)
 
         convolution2dLayer(5,64)
-        leakyReluLayer(0.01)
         batchNormalizationLayer
+        leakyReluLayer(0.01)
 
         maxPooling2dLayer(2,'Stride',2)
 
         convolution2dLayer(5,128)
-        leakyReluLayer(0.01)
         batchNormalizationLayer
+        leakyReluLayer(0.01)
         
         maxPooling2dLayer(2,'Stride',2)
 
         convolution2dLayer(5,256)
-        leakyReluLayer(0.01)
         batchNormalizationLayer
+        leakyReluLayer(0.01)
         
         fullyConnectedLayer(1024)
-        leakyReluLayer(0.01)
         batchNormalizationLayer
+        leakyReluLayer(0.01)
         
         fullyConnectedLayer(1024)
-        leakyReluLayer(0.01)
         batchNormalizationLayer
+        leakyReluLayer(0.01)
 
         fullyConnectedLayer(4)
         batchNormalizationLayer
@@ -87,82 +87,41 @@ function layers = new_architecture(inputSize, version)
         imageInputLayer(inputSize)
 
         convolution2dLayer(7,32)
-        leakyReluLayer(0.01)
         batchNormalizationLayer
+        leakyReluLayer(0.01)
 
         
         maxPooling2dLayer(2,'Stride',2)
 
         convolution2dLayer(7,64)
-        leakyReluLayer(0.01)
         batchNormalizationLayer
+        leakyReluLayer(0.01)
 
         maxPooling2dLayer(2,'Stride',2)
 
         convolution2dLayer(5,128)
-        leakyReluLayer(0.01)
         batchNormalizationLayer
+        leakyReluLayer(0.01)
         
         maxPooling2dLayer(2,'Stride',2)
 
         convolution2dLayer(3,256)
-        leakyReluLayer(0.01)
         batchNormalizationLayer
+        leakyReluLayer(0.01)
         
         fullyConnectedLayer(1024)
-        leakyReluLayer(0.01)
         batchNormalizationLayer
+        leakyReluLayer(0.01)
         
         fullyConnectedLayer(1024)
-        leakyReluLayer(0.01)
         batchNormalizationLayer
+        leakyReluLayer(0.01)
 
         fullyConnectedLayer(4)
         batchNormalizationLayer
         softmaxLayer
         classificationLayer];
     
-    elseif version == 3 %11
-        
-        layers = [
-        imageInputLayer(inputSize)
-
-        convolution2dLayer(7,32)
-        leakyReluLayer(0.01)
-        batchNormalizationLayer
-
-        
-        maxPooling2dLayer(2,'Stride',2)
-
-        convolution2dLayer(7,64)
-        leakyReluLayer(0.01)
-        batchNormalizationLayer
-
-        maxPooling2dLayer(2,'Stride',2)
-
-        convolution2dLayer(5,128)
-        leakyReluLayer(0.01)
-        batchNormalizationLayer
-        
-        maxPooling2dLayer(2,'Stride',2)
-
-        convolution2dLayer(3,256)
-        leakyReluLayer(0.01)
-        batchNormalizationLayer
-        
-        fullyConnectedLayer(1024)
-        leakyReluLayer(0.01)
-        batchNormalizationLayer
-        
-        fullyConnectedLayer(1024)
-        leakyReluLayer(0.01)
-        batchNormalizationLayer
-
-        fullyConnectedLayer(4)
-        batchNormalizationLayer
-        softmaxLayer
-        classificationLayer];
-
     end
 
 end

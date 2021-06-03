@@ -39,7 +39,7 @@ do_googlenet = 0;
 do_svm = 0;
 do_fine_tuning = 0;
 do_new_architecture = 1;
-include_segm = 1;
+include_segm = 0;
 
 % VARIABLES
 file_train = 'train.mat';
@@ -101,7 +101,7 @@ end
 
 fprintf('Pre processing ...\n');
 
-imageAugmenter = imageDataAugmenter('RandRotation',@() -180+360*rand, ... 
+imageAugmenter = imageDataAugmenter('RandRotation',@() -180 + 360*rand, ... 
                                     'RandXReflection', true, ...
                                     'RandXScale',[1, 1.05], ...
                                     'RandYReflection', true, ...
@@ -157,7 +157,7 @@ if (do_svm == 1)
     
 elseif (do_fine_tuning == 1)
     
-    accuracy = fine_tuning(net, 'googlenet', train, validation, inputSize, 'loss3-classifier','output');
+    accuracy = fine_tuning(net, 'vgg16', train, validation, inputSize);
     %ResNet18 = 'fc1000' and 'ClassificationLayer_predictions'
     %GoogleNet = 'loss3-classifier' and 'output'
     
@@ -168,13 +168,21 @@ elseif (do_new_architecture == 1)
    meanVal = 0;
    meanTrain = 0;
    for i=1:3
-        [accuracyTest, accuracyVal, accuracyTrain] = train_new_architecture(train, validation, test, augTrain, 3);
+        [accuracyTest, accuracyVal, accuracyTrain, cm] = train_new_architecture(train, validation, test, augTrain, 2);
         meanTest = meanTest + accuracyTest;
         meanVal = meanVal + accuracyVal;
         meanTrain = meanTrain + accuracyTrain;
         fprintf('Accuracy #%d Test set: %d\n', i, accuracyTest);
         fprintf('Accuracy #%d Validation set: %d\n', i, accuracyVal);
         fprintf('Accuracy #%d Train set: %d\n', i, accuracyTrain);
+        
+        cm.Title = 'Pollengrain Test 9 net';
+        cm.RowSummary = 'row-normalized';
+        cm.ColumnSummary = 'column-normalized';
+        
+        cm.NormalizedValues
+        cm
+        
    end
    
    fprintf('Mean accuracy Test set: %d\n', (meanTest/3));

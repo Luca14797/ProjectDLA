@@ -1,16 +1,18 @@
-function [accuracyTest, accuracyVal, accuracyTrain] = train_new_architecture(train, validation, test, augTrain, version)
+function [accuracyTest, accuracyVal, accuracyTrain, cm] = train_new_architecture(train, validation, test, augTrain, version)
 
     layers = new_architecture([84 84 3], version);
     options = trainingOptions('adam', 'MiniBatchSize',32, ...
-        'InitialLearnRate',0.0005, 'MaxEpochs', 5, ...
+        'InitialLearnRate',0.0003, 'MaxEpochs', 10, ...
         'Shuffle','every-epoch', 'ValidationData', validation, ...
         'ValidationFrequency',281, 'Verbose',true, ...
-        'Plots','training-progress', ...
-        'LearnRateSchedule','piecewise', 'LearnRateDropFactor',0.90, 'LearnRateDropPeriod', 10);
+        'Plots','training-progress')
+        %%'LearnRateSchedule','piecewise', 'LearnRateDropFactor',0.90, 'LearnRateDropPeriod', 10);
     net = trainNetwork(augTrain, layers, options);
 
     YPred = classify(net, test);
     YTest = test.Labels;
+    
+    cm = confusionchart(YTest ,YPred);
 
     accuracyTest = sum(YPred == YTest)/numel(YTest);
     

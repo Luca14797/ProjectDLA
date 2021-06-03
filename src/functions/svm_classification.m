@@ -1,8 +1,9 @@
 function accuracy = svm_classification(net, train, test, trainAug, testAug, show_img)
 
     fprintf('Activations ...\n');
-
-    layer = 'pool5';
+    
+    layer = 'loss3-classifier';
+    %%layer = 'pool5';
     featuresTrain = activations(net, trainAug, layer, 'OutputAs', 'rows');
     featuresTest = activations(net, testAug, layer, 'OutputAs', 'rows');
 
